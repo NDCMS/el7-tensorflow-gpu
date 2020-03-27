@@ -77,6 +77,12 @@ RUN yum -y install \
 	wget \
 	which
 
+# Add python3 support
+RUN yum -y install \
+        python3 \
+        python3-dev \
+        python3-tk
+
 # osg
 RUN yum -y install osg-ca-certs osg-wn-client
 RUN rm -f /etc/grid-security/certificates/*.r0
@@ -135,7 +141,7 @@ RUN for NVBIN in \
 RUN curl -O https://bootstrap.pypa.io/get-pip.py
 RUN python get-pip.py
 RUN rm get-pip.py
-    
+
 RUN echo "/usr/local/cuda/lib64/" >/etc/ld.so.conf.d/cuda.conf
 RUN echo "/usr/local/cuda/extras/CUPTI/lib64/" >>/etc/ld.so.conf.d/cuda.conf
 
@@ -144,7 +150,7 @@ RUN pip install cython
 
 # Install TensorFlow GPU version
 RUN pip install --upgrade https://storage.googleapis.com/tensorflow/linux/gpu/tensorflow_gpu-1.12.0-cp27-none-linux_x86_64.whl
-    
+
 # keras
 RUN pip install keras==2.2.5
 
@@ -152,6 +158,47 @@ RUN pip install keras==2.2.5
 # Future required for python 2.7 support
 RUN pip install future
 RUN pip install torch==1.4.0 torchvision==0.5.0
+
+# Extra python packages
+# ignore-installed pyYAML 
+# Workaround for issue: https://github.com/pypa/pip/issues/5247
+RUN pip --no-cache-dir  install --ignore-installed PyYAML \
+        h5py \
+        matplotlib \
+        scikit-learn \
+        numpy \
+        pandas \
+        Pillow \
+        scipy
+
+### Python 3 support
+# Note: The pip symlink will switch from pip2 to pip3 as the default
+# But pip3 will be used here, just for clarity.
+
+RUN curl -O https://bootstrap.pypa.io/get-pip.py
+RUN python3 get-pip.py
+RUN rm get-pip.py
+
+RUN pip3 install cython
+
+# Install TensorFlow GPU version
+RUN pip3 install --upgrade tensorflow-gpu==1.12.0
+
+# keras
+RUN pip3 install keras==2.2.5
+
+# pytorch
+# Future required for python 2.7 support
+RUN pip3 install torch==1.4.0 torchvision==0.5.0
+RUN pip3 --no-cache-dir  install --ignore-installed PyYAML \
+        h5py \
+        matplotlib \
+        scikit-learn \
+        numpy \
+        pandas \
+        Pillow \
+        scipy
+
 
 #################################
 # Manually add Singularity files
