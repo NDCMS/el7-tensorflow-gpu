@@ -65,7 +65,6 @@ RUN yum -y install \
 	osg-wn-client \
 	p7zip \
 	p7zip-plugins \
-	python-devel \
 	redhat-lsb-core \
 	rsync \
         stashcache-client \
@@ -90,9 +89,6 @@ RUN rm -f /etc/grid-security/certificates/*.r0
 # htcondor - include so we can chirp
 RUN yum -y install condor
 
-# pegasus
-RUN yum -y install pegasus
-
 # Cleaning caches to reduce size of image
 RUN yum clean all
 
@@ -109,6 +105,7 @@ RUN for MNTPOINT in \
     /stash2 \
     /srv \
     /scratch \
+    /scratch365 \
     /data \
     /project \
   ; do \
@@ -132,44 +129,8 @@ RUN for NVBIN in \
   done
 
 
-
-
-
-##############################################
-# Install TensorFlow, Keras, etc. with Python
-
-RUN curl -O https://bootstrap.pypa.io/get-pip.py
-RUN python get-pip.py
-RUN rm get-pip.py
-
 RUN echo "/usr/local/cuda/lib64/" >/etc/ld.so.conf.d/cuda.conf
 RUN echo "/usr/local/cuda/extras/CUPTI/lib64/" >>/etc/ld.so.conf.d/cuda.conf
-
-# install Cython
-RUN pip install cython
-
-# Install TensorFlow GPU version
-RUN pip install --upgrade https://storage.googleapis.com/tensorflow/linux/gpu/tensorflow_gpu-1.12.0-cp27-none-linux_x86_64.whl
-
-# keras
-RUN pip install keras==2.2.5
-
-# pytorch
-# Future required for python 2.7 support
-RUN pip install future
-RUN pip install torch==1.4.0 torchvision==0.5.0
-
-# Extra python packages
-# ignore-installed pyYAML 
-# Workaround for issue: https://github.com/pypa/pip/issues/5247
-RUN pip --no-cache-dir  install --ignore-installed PyYAML \
-        h5py \
-        matplotlib \
-        scikit-learn \
-        numpy \
-        pandas \
-        Pillow \
-        scipy
 
 ### Python 3 support
 # Note: The pip symlink will switch from pip2 to pip3 as the default
@@ -181,24 +142,16 @@ RUN rm get-pip.py
 
 RUN pip3 install cython
 
+# Add jupyterhub
+RUN pip3 install jupyterhub==1.0.0 notebook==6.0.3
+
 # Install TensorFlow GPU version
 RUN pip3 install --upgrade tensorflow-gpu==1.12.0
 
 # keras
 RUN pip3 install keras==2.2.5
 
-# pytorch
-# Future required for python 2.7 support
-RUN pip3 install torch==1.4.0 torchvision==0.5.0
-RUN pip3 --no-cache-dir  install --ignore-installed PyYAML \
-        h5py \
-        matplotlib \
-        scikit-learn \
-        numpy \
-        pandas \
-        Pillow \
-        scipy
-
+RUN
 
 #################################
 # Manually add Singularity files
