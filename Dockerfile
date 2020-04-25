@@ -151,8 +151,6 @@ RUN pip3 install --upgrade tensorflow-gpu==1.12.0
 # keras
 RUN pip3 install keras==2.2.5
 
-RUN
-
 #################################
 # Manually add Singularity files
 
