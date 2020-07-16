@@ -152,7 +152,7 @@ RUN pip3 install --upgrade tensorflow-gpu==1.12.0
 RUN pip3 install keras==2.2.5
 
 # GPyOpt
-pip3 install gpyopt
+RUN pip3 install gpyopt
 
 #################################
 # Manually add Singularity files
